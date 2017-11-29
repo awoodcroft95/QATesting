@@ -9,6 +9,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.PageFactory;
 
 import java.io.File;
+import java.io.IOException;
 
 public class Draggable {
 
@@ -17,6 +18,7 @@ public class Draggable {
     private JavascriptExecutor js;
     private static ExtentReports report;
     private DraggablePage dragPage;
+    private static int screenShotCount = 1;
 
 
     @BeforeClass
@@ -42,7 +44,75 @@ public class Draggable {
         webDriver.manage().window().maximize();
         dragPage = new DraggablePage(webDriver);
         dragPage.clickOnDefault();
+        int x = dragPage.getLocationX();
+        int y = dragPage.getLocationY();
         dragPage.dragAction();
+        int endX = dragPage.getLocationX();
+        int endY = dragPage.getLocationY();
+        Assert.assertEquals(x + 50, endX);
+        try {
+            test.addScreenCaptureFromPath(ScreenShot.take(webDriver, "screenShot" + screenShotCount), "Screenshot of end of test" + screenShotCount);
+            screenShotCount ++;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void constrainTest1() {
+        ExtentTest test = report.createTest("Constrain Movement Test");
+        test.log(Status.INFO, "Test to check each of the 2 axis controlled draggable boxes do the correct thing.");
+        test.log(Status.DEBUG, "Check if the vertical only box can only be moved in the y axis, do this by attempting to move the box in both the X and Y axis.");
+        webDriver.navigate().to(url);
+        webDriver.manage().window().maximize();
+        dragPage = new DraggablePage(webDriver);
+        dragPage.clickConstrain();
+        int x = dragPage.getYLockedX();
+        int y = dragPage.getYLockedY();
+        dragPage.dragYBox();
+        int endY = dragPage.getYLockedY();
+        int endX = dragPage.getYLockedX();
+        boolean vertResult;
+        if (x == endX && endY == y + 50){
+            vertResult = true;
+        } else { vertResult = false; }
+
+        test.log(Status.DEBUG, "Check if the horizontal only box can only be moved in the x axis, do this by attempting to move it in both the X and Y axis.");
+        int xOfX = dragPage.getXLockedX();
+        int yOfX = dragPage.getXLockedY();
+        dragPage.dragXBox();
+        int xOfXEnd = dragPage.getXLockedX();
+        int yOfXEnd = dragPage.getXLockedY();
+        System.out.println(xOfXEnd + " " + yOfXEnd);
+        boolean hozResult;
+        if (xOfXEnd == xOfX + 50 && yOfX == yOfXEnd){
+            hozResult = true;
+        } else { hozResult = false;}
+
+        boolean completeResult;
+        if(vertResult && hozResult){
+            completeResult = true;
+        } else { completeResult = false; }
+
+        Assert.assertEquals(true, completeResult);
+        try {
+            test.addScreenCaptureFromPath(ScreenShot.take(webDriver, "screenShot" + screenShotCount), "Screenshot of end of test" + screenShotCount);
+            screenShotCount ++;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void constrainTest2(){
+        ExtentTest test = report.createTest("Constrain Movement Test");
+        test.log(Status.INFO, "Test to check each of the 2 dom element controlled draggable boxes do the correct thing.");
+        test.log(Status.DEBUG, "Test to check if the contained box can move all the way to the bottom right corner.");
+        webDriver.navigate().to(url);
+        webDriver.manage().window().maximize();
+        dragPage = new DraggablePage(webDriver);
+        dragPage.clickConstrain();
+
     }
 
     @After
