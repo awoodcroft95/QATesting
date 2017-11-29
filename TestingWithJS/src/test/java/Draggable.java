@@ -6,7 +6,6 @@ import org.junit.*;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.PageFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +32,7 @@ public class Draggable {
     @Before
     public void setUp(){
         webDriver = new ChromeDriver();
+        js = (JavascriptExecutor)webDriver;
     }
 
     @Test
@@ -60,7 +60,7 @@ public class Draggable {
 
     @Test
     public void constrainTest1() {
-        ExtentTest test = report.createTest("Constrain Movement Test");
+        ExtentTest test = report.createTest("Constrain Movement Test 1");
         test.log(Status.INFO, "Test to check each of the 2 axis controlled draggable boxes do the correct thing.");
         test.log(Status.DEBUG, "Check if the vertical only box can only be moved in the y axis, do this by attempting to move the box in both the X and Y axis.");
         webDriver.navigate().to(url);
@@ -83,7 +83,6 @@ public class Draggable {
         dragPage.dragXBox();
         int xOfXEnd = dragPage.getXLockedX();
         int yOfXEnd = dragPage.getXLockedY();
-        System.out.println(xOfXEnd + " " + yOfXEnd);
         boolean hozResult;
         if (xOfXEnd == xOfX + 50 && yOfX == yOfXEnd){
             hozResult = true;
@@ -105,16 +104,55 @@ public class Draggable {
 
     @Test
     public void constrainTest2(){
-        ExtentTest test = report.createTest("Constrain Movement Test");
+        ExtentTest test = report.createTest("Constrain Movement Test 2");
         test.log(Status.INFO, "Test to check each of the 2 dom element controlled draggable boxes do the correct thing.");
         test.log(Status.DEBUG, "Test to check if the contained box can move all the way to the bottom right corner.");
         webDriver.navigate().to(url);
         webDriver.manage().window().maximize();
         dragPage = new DraggablePage(webDriver);
         dragPage.clickConstrain();
-
+        dragPage.dragConstrainedBox();
+        boolean result;
+        if (dragPage.getConX() == 1090 && dragPage.getConY() == 579){
+            result = true;
+        } else { result = false; }
+        Assert.assertEquals(true, result);
+        try {
+            test.addScreenCaptureFromPath(ScreenShot.take(webDriver, "screenShot" + screenShotCount), "Screenshot of end of test" + screenShotCount);
+            screenShotCount ++;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
+    @Test
+    public void cursorTest(){
+        ExtentTest test = report.createTest("Cursor Style Test");
+        test.log(Status.INFO, "Test to check if the box moves properly do the correct thing.");
+        test.log(Status.DEBUG, "Test to check if the element that moves the mouse moves correctly when moved.");
+        webDriver.navigate().to(url);
+        webDriver.manage().window().maximize();
+        dragPage = new DraggablePage(webDriver);
+        dragPage.clickOnCursorStyle();
+        int x, y;
+        x = dragPage.getStyleX();
+        y = dragPage.getStyleY();
+        dragPage.dragTopLeftBox();
+        boolean result;
+        if (x+105 == dragPage.getStyleX() && y+305 == dragPage.getStyleY()){
+            result = true;
+        } else {
+            result = false;
+        }
+        Assert.assertEquals(true, result);
+        try {
+            test.addScreenCaptureFromPath(ScreenShot.take(webDriver, "screenShot" + screenShotCount), "Screenshot of end of test" + screenShotCount);
+            screenShotCount ++;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
     @After
     public void tearDown() {
         webDriver.quit();

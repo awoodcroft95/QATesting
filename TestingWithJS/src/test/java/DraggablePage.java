@@ -1,4 +1,3 @@
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -28,8 +27,13 @@ public class DraggablePage {
     @FindBy(css = "#draggabl5")
     private WebElement parentBox;
 
+    @FindBy(css = "#ui-id-3")
+    private WebElement cursorStyle;
+
+    @FindBy(css = "#drag2")
+    private WebElement topLeftDragBox;
+
     private WebDriver driver;
-    private JavascriptExecutor js;
     Actions builder;
 
     public void clickOnDefault(){
@@ -40,16 +44,12 @@ public class DraggablePage {
         constrainMovement.click();
     }
 
+    public void clickOnCursorStyle(){cursorStyle.click();}
+
     public DraggablePage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
         builder = new Actions(driver);
-    }
-
-    public void setupJS(){
-        if (driver instanceof JavascriptExecutor) {
-            js = (JavascriptExecutor)driver;
-        }
     }
 
     public void dragAction(){
@@ -62,6 +62,14 @@ public class DraggablePage {
 
     public void dragXBox(){
         builder.moveToElement(boxInX).clickAndHold().moveByOffset(50, 50).release().perform();
+    }
+
+    public void dragConstrainedBox(){
+        builder.moveToElement(constrainedBox).clickAndHold().moveByOffset(550, 30).release().perform();
+    }
+
+    public void dragTopLeftBox(){
+        builder.moveToElement(topLeftDragBox).clickAndHold().moveByOffset(50, 250).release().perform();
     }
 
     public int getYLockedX(){
@@ -83,4 +91,20 @@ public class DraggablePage {
     public int getXLockedX(){ return boxInX.getLocation().getX(); }
 
     public int getXLockedY(){ return boxInX.getLocation().getY(); }
+
+    public int getConX(){
+        return constrainedBox.getLocation().getX();
+    }
+
+    public int getConY(){
+        return constrainedBox.getLocation().getY();
+    }
+
+    public int getStyleX(){
+        return topLeftDragBox.getLocation().getX();
+    }
+
+    public int getStyleY(){
+        return topLeftDragBox.getLocation().getY();
+    }
 }
