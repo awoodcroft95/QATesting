@@ -148,4 +148,8 @@ public class ECommerceTest {
         }
     }
 
+    public void multiBrowser(){
+
+    }
+
 }
