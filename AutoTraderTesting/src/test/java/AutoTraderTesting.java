@@ -4,10 +4,12 @@ import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.junit.*;
+import org.omg.CORBA.PUBLIC_MEMBER;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Select;
 
@@ -23,6 +25,7 @@ public class AutoTraderTesting {
     private SpreadSheetReader sSReader;
     private List<String> rowString;
     private static int testNumber = 0;
+    private Actions builder;
 
 
     @BeforeClass
@@ -111,5 +114,38 @@ public class AutoTraderTesting {
         } catch(IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void navBarHighlightTest(){
+        ExtentTest test = report.createTest("Navbar Highlight Dropdown Test");
+        test.log(Status.INFO, "Check the nav bar correctly shows new information when moused over.");
+        test.log(Status.DEBUG, "Navigate to the home page, move a virtual mouse over the nav bar, check if new data appears.");
+        webDriver.navigate().to(url);
+        webDriver.manage().window().maximize();
+        builder = new Actions(webDriver);
+        WebElement navBar1 = webDriver.findElement(By.cssSelector("#js-header-nav > ul > li.header__nav-listing.header__nav-buying > a"));
+        builder.moveToElement(navBar1).moveByOffset(10,10).perform();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        WebElement howTo = webDriver.findElement(By.cssSelector("#buying-new-used > li.header__sub-nav-listing.header__sub-nav-listing--4 > a"));
+        Assert.assertEquals(true, howTo.isDisplayed());
+    }
+
+    @Test
+    public void loansPageTest(){
+        ExtentTest test = report.createTest("Navbar Highlight Dropdown Test");
+        test.log(Status.INFO, "Check the nav bar correctly shows new information when moused over.");
+        test.log(Status.DEBUG, "Navigate to the home page, move a virtual mouse over the nav bar, check if new data appears.");
+        webDriver.navigate().to("https://www.autotrader.co.uk/car-finance");
+        webDriver.manage().window().maximize();
+        LoansPage loanPage = new LoansPage(webDriver);
+        loanPage.dragBar1();
+        loanPage.dragBar2();
+        String cost = loanPage.getCost();
+        Assert.assertEquals("£28.44", cost);
     }
 }
