@@ -168,10 +168,32 @@ public class AutoTraderTesting {
         webDriver.manage().window().maximize();
         ReviewsSearchPage reviews = PageFactory.initElements(webDriver, ReviewsSearchPage.class);
         rowString = sSReader.readRow(1, "Sheet2");
+        //Sometimes this fails, not sure why.
         reviews.selectAllDropDowns(rowString.get(0), rowString.get(1), rowString.get(2));
         reviews.clickButton();
         String title = webDriver.findElement(By.cssSelector("#content > div.owner-reviews-top-section.panelMiddle > div.rollup > div.layer > h1")).getText();
         Assert.assertEquals("Volvo V70 Estate 2013‑2017", title);
+        try{
+            testNumber++;
+            test.addScreenCaptureFromPath(ScreenShot.take(webDriver, "ScreenShot" + testNumber), "Screen shot of test number " + testNumber);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //This Test doesn't work, it can't seem to get the data from the page that is needed for validation.
+    @Ignore
+    @Test
+    public void testSellPackages(){
+        ExtentTest test = report.createTest("Advertisements Tabs Test");
+        test.log(Status.INFO, "Check thetabs work on the advertisement page.");
+        test.log(Status.DEBUG, "Navigate to the advertising prices page, click on the non-default tab, check the value shown.");
+        webDriver.navigate().to("https://www.autotrader.co.uk/sell-my-car/advertising-prices");
+        webDriver.manage().window().maximize();
+        AdvertPricesPage adverts = PageFactory.initElements(webDriver, AdvertPricesPage.class);
+        adverts.clickTab();
+        String price = adverts.getPrice();
+        Assert.assertEquals("4x", price);
         try{
             testNumber++;
             test.addScreenCaptureFromPath(ScreenShot.take(webDriver, "ScreenShot" + testNumber), "Screen shot of test number " + testNumber);
