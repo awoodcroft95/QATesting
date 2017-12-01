@@ -2,9 +2,7 @@ import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.junit.*;
-import org.omg.CORBA.PUBLIC_MEMBER;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -133,13 +131,19 @@ public class AutoTraderTesting {
         }
         WebElement howTo = webDriver.findElement(By.cssSelector("#buying-new-used > li.header__sub-nav-listing.header__sub-nav-listing--4 > a"));
         Assert.assertEquals(true, howTo.isDisplayed());
+        try{
+            testNumber++;
+            test.addScreenCaptureFromPath(ScreenShot.take(webDriver, "ScreenShot" + testNumber), "Screen shot of test number " + testNumber);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void loansPageTest(){
-        ExtentTest test = report.createTest("Navbar Highlight Dropdown Test");
-        test.log(Status.INFO, "Check the nav bar correctly shows new information when moused over.");
-        test.log(Status.DEBUG, "Navigate to the home page, move a virtual mouse over the nav bar, check if new data appears.");
+        ExtentTest test = report.createTest("Loans Page Sliders Test");
+        test.log(Status.INFO, "Check the sliders work correctly when interacted with.");
+        test.log(Status.DEBUG, "Navigate to the loans page, use a Actions builder to control the sliders, validate using the output given by the site's calculation.");
         webDriver.navigate().to("https://www.autotrader.co.uk/car-finance");
         webDriver.manage().window().maximize();
         LoansPage loanPage = new LoansPage(webDriver);
@@ -147,5 +151,32 @@ public class AutoTraderTesting {
         loanPage.dragBar2();
         String cost = loanPage.getCost();
         Assert.assertEquals("£28.44", cost);
+        try{
+            testNumber++;
+            test.addScreenCaptureFromPath(ScreenShot.take(webDriver, "ScreenShot" + testNumber), "Screen shot of test number " + testNumber);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void reviewsSearchTest(){
+        ExtentTest test = report.createTest("Review Search Test");
+        test.log(Status.INFO, "Check the search functionality of the user reviews.");
+        test.log(Status.DEBUG, "Navigate to the car reviews page, enter information from a spreadsheet, check if the output page shows the correct information.");
+        webDriver.navigate().to("https://www.autotrader.co.uk/car-reviews");
+        webDriver.manage().window().maximize();
+        ReviewsSearchPage reviews = PageFactory.initElements(webDriver, ReviewsSearchPage.class);
+        rowString = sSReader.readRow(1, "Sheet2");
+        reviews.selectAllDropDowns(rowString.get(0), rowString.get(1), rowString.get(2));
+        reviews.clickButton();
+        String title = webDriver.findElement(By.cssSelector("#content > div.owner-reviews-top-section.panelMiddle > div.rollup > div.layer > h1")).getText();
+        Assert.assertEquals("Volvo V70 Estate 2013‑2017", title);
+        try{
+            testNumber++;
+            test.addScreenCaptureFromPath(ScreenShot.take(webDriver, "ScreenShot" + testNumber), "Screen shot of test number " + testNumber);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 }
